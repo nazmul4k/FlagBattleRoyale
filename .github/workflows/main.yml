@@ -30,14 +30,18 @@ jobs:
           mkdir project
           unzip -q "FlagBattleRoyale_AndroidStudio_Project[1].zip" -d project
 
-      - name: Build APKs
+      - name: Find project and build APK
         run: |
           SETTINGS=$(find project -type f \( -name settings.gradle -o -name settings.gradle.kts \) -print -quit)
           PROJECT_DIR=$(dirname "$SETTINGS")
-          gradle -p "$PROJECT_DIR" assembleDebug assembleRelease
+          echo "Project directory: $PROJECT_DIR"
+          gradle -p "$PROJECT_DIR" assembleDebug
+          echo "APK files:"
+          find project -type f -name "*.apk" -print
 
       - name: Upload APK files
         uses: actions/upload-artifact@v4
         with:
-          name: Flag-Battle-Royale-APKs
-          path: project//build/outputs/apk//*.apk
+          name: Flag-Battle-Royale-APK
+          path: project/**/*.apk
+          if-no-files-found: error
